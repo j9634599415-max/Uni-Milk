@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Uni Milk</title>
+    <style>
+        :root { --primary: #4CAF50; --accent: #FFC107; --bg: #f8f9fa; --dark: #333; --green-dark: #006b3d; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--dark); padding-bottom: 120px; }
+        
+        /* HEADER */
+        .header { background: white; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); height: 60px; }
+        .nav-btn { font-size: 28px; color: var(--primary); cursor: pointer; padding: 10px; min-width: 50px; text-align: center; }
+        .logo-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .logo-img { width: 35px; height: 35px; border-radius: 50%; }
+        .logo-text { font-weight: bold; color: var(--primary); font-size: 1.2em; }
+        
+        /* SIDEBAR MENU */
+        .side-menu { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: white; z-index: 2001; transition: 0.3s; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+        .side-menu.open { left: 0; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; }
+        .overlay.open { display: block; }
+        .menu-link { padding: 15px 0; border-bottom: 1px solid #eee; font-weight: bold; cursor: pointer; display: block; color: var(--dark); text-decoration: none; }
+        
+        /* FLOATING BUTTON */
+        .support-btn-3d { position: fixed; bottom: 25px; left: 20px; width: 65px; height: 65px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1500; cursor: pointer; border: 2px solid #eee; overflow: hidden; }
+        .support-btn-3d img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* VIEWS */
+        .view { display: none; }
+        .active-view { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* UI ELEMENTS */
+        .top-banner { background: linear-gradient(to right, #FF9933, #FFFFFF, #128807); text-align: center; padding: 10px; font-weight: 900; border-bottom: 1px solid #ddd; font-size: 14px; }
+        .hero { background: var(--dark); color: white; padding: 30px 20px; text-align: center; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .card { background: white; padding: 15px; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); cursor: pointer; }
+        .prod-img { width: 100%; height: 100px; object-fit: contain; margin-bottom: 10px; }
+        
+        /* BUTTONS & QUANTITY ADDER */
+        .btn { background: var(--accent); border: none; padding: 10px; border-radius: 5px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 5px; }
+        .qty-box { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; }
+        .qty-btn { width: 32px; height: 32px; border-radius: 5px; border: none; background: var(--primary); color: white; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .qty-val { font-weight: bold; font-size: 16px; min-width: 20px; }
+
+        .sub-msg-small { font-size: 10px; color: #2e7d32; background: #e8f5e9; padding: 4px; border-radius: 4px; margin-top: 8px; font-weight: bold; line-height: 1.2; border: 1px solid #c8e6c9; }
+
+        /* ANNOUNCEMENT BANNER */
+        .announce-container { padding: 15px; }
+        .announce-card { background: linear-gradient(135deg, #1b5e20, #43a047); border-radius: 20px; color: white; padding: 25px; position: relative; overflow: hidden; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+
+        /* CART STYLES */
+        .cart-item { background: white; margin: 10px 15px; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .cart-total-box { padding: 20px; background: white; margin-top: 20px; border-top: 2px solid #eee; text-align: right; }
+        .empty-cart-msg { text-align: center; padding: 50px 20px; color: #888; }
+        .remove-btn { color: #ff4444; border: none; background: none; font-weight: bold; padding: 5px; }
+
+        /* COMING SOON */
+        .coming-soon { background: #eee; padding: 40px 20px; text-align: center; border-radius: 15px; margin: 20px; border: 2px dashed #ccc; color: #777; font-weight: bold; font-size: 1.2em; }
+
+        /* SUBSCRIPTION */
+        .buddy-msg { background: #fff3e0; color: #e65100; padding: 15px; margin: 15px; border-radius: 10px; border-left: 5px solid #ff9800; font-size: 0.9em; font-weight: 600; }
+        .status-box { background: white; padding: 20px; margin: 15px; border-radius: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .unlock-btn { width: 100%; padding: 12px; border-radius: 25px; border: none; font-weight: bold; color: white; cursor: pointer; margin-top: 10px; }
+        .unlock-btn.locked { background: var(--primary); }
+        .unlock-btn.unlocked { background: #ff4444; }
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 15px; }
+        .plan-item { border: 2px solid #eee; padding: 15px; border-radius: 8px; text-align: center; background: white; cursor: pointer; font-weight: bold; }
+        .plan-item.active { border-color: var(--primary); background: #e8f5e9; }
+
+        /* CONTACT & BULK */
+        .support-card { background: white; border-radius: 15px; padding: 30px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); max-width: 400px; margin: 20px auto; text-align: center; }
+        .contact-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 10px; color: white; text-decoration: none; font-weight: bold; }
+        .bg-call { background-color: #5cb85c; }
+        .bg-wa { background-color: #2ecc71; }
+        .bg-mail { background-color: #e74c3c; }
+        .bg-insta { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+
+        .cart-bar { position: fixed; bottom: 20px; left: 100px; right: 20px; background: var(--green-dark); color: white; padding: 15px 20px; border-radius: 30px; display: none; align-items: center; justify-content: space-between; font-weight: bold; z-index: 1600; }
+    </style>
+    <script>
+        var cart = [];
+        var isSubscribed = false;
+        var currentViewID = 'shop-view';
+        var selectedPrice = 49;
+        
+        var products = {
+            milk: [{s:"250ml", p:25}, {s:"500ml", p:37}, {s:"1L", p:75}, {s:"1.5L", p:112}, {s:"2L", p:150}, {s:"2.5L", p:180}, {s:"3L", p:215}],
+            dahi: [{s:"100g", p:20}, {s:"250g", p:40}, {s:"500g", p:75}, {s:"1kg", p:140}],
+            paneer: [{s:"200g", p:80}, {s:"500g", p:195}, {s:"1kg", p:380}],
+            chhach: [{s:"Plain Chhach", p:15}, {s:"Masala Chhach", p:20}, {s:"Family Pack 1L", p:60}],
+            ghee: [{s:"500g", p:410}, {s:"1kg", p:799}, {s:"1.5kg", p:1149}, {s:"2kg", p:1499}]
+        };
+
+        var images = {
+            milk: "https://i.postimg.cc/vH02XCsj/IMG-20251222-WA0013.jpg",
+            dahi: "https://i.postimg.cc/pLv41K9w/IMG-20251222-WA0008.jpg",
+            paneer: "https://i.postimg.cc/R0Nkc4Jn/IMG-20251222-WA0012.jpg",
+            chhach: "https://i.postimg.cc/BQ7N2DTg/IMG-20251222-WA0015.jpg",
+            ghee: "https://i.postimg.cc/WpHZ2P0f/file-000000004e987206a95c3716263b3f7d.png"
+        };
+
+        function toggleSidebar(show) {
+            document.getElementById('side-menu').classList.toggle('open', show);
+            document.getElementById('overlay').classList.toggle('open', show);
+        }
+
+        function handleMenuBtn() {
+            if (currentViewID === 'shop-view') toggleSidebar(true);
+            else openView('shop-view');
+        }
+
+        function openView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active-view'));
+            document.getElementById(id).classList.add('active-view');
+            currentViewID = id;
+            var hideFloat = (id === 'contact-view' || id === 'cart-view' || id === 'bulk-view');
+            document.getElementById('float-btn').style.display = hideFloat ? 'none' : 'flex';
+            toggleSidebar(false);
+            document.getElementById('nav-icon').innerText = (id === 'shop-view') ? '☰' : '←';
+            if (id === 'cart-view') renderCart();
+            var cat = id.split('-')[0];
+            if (products[cat]) renderItems(cat);
+            updateCartIcon();
+            window.scrollTo(0,0);
+        }
+
+        function renderItems(cat) {
+            var container = document.getElementById(cat + '-grid');
+            if (!container) return;
+            container.innerHTML = products[cat].map((item) => {
+                let p = item.p;
+                let subMsg = '';
+                if(cat === 'milk' && isSubscribed) {
+                    let val = item.s.includes('ml') ? parseFloat(item.s)/1000 : parseFloat(item.s);
+                    p = (item.p - (val * 7)).toFixed(2);
+                    subMsg = `<div class="sub-msg-small">Congrats 🎉!! Enjoy Your Subscription Discount</div>`;
+                }
+                let uniqueName = `${cat.toUpperCase()} - ${item.s}`;
+                let count = cart.filter(c => c.name === uniqueName).length;
+                let btnHTML = count === 0 ? `<button class="btn" onclick="modifyQty('${uniqueName}', ${p}, 1, '${cat}')">Add ₹${p}</button>` : 
+                    `<div class="qty-box"><button class="qty-btn" onclick="modifyQty('${uniqueName}', ${p}, -1, '${cat}')">-</button><span class="qty-val">${count}</span><button class="qty-btn" onclick="modifyQty('${uniqueName}', ${p}, 1, '${cat}')">+</button></div>`;
+                return `<div class="card"><img src="${images[cat]}" class="prod-img"><h4>${item.s}</h4>${btnHTML}${subMsg}</div>`;
+            }).join('');
+        }
+
+        function modifyQty(name, price, change, cat) {
+            if (change === 1) cart.push({name, price});
+            else { let idx = cart.findIndex(c => c.name === name); if(idx > -1) cart.splice(idx, 1); }
+            updateCartIcon(); renderItems(cat);
+        }
+
+        function removeFromCart(index) { cart.splice(index, 1); renderCart(); updateCartIcon(); }
+
+        function updateCartIcon() {
+            var bar = document.getElementById('cart-bar');
+            bar.style.display = (cart.length > 0 && currentViewID !== 'cart-view') ? 'flex' : 'none';
+            document.getElementById('cart-count-txt').innerText = cart.length + " Items Added";
+        }
+
+        function renderCart() {
+            var container = document.getElementById('cart-items-list');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="empty-cart-msg"><h3>Your cart is empty!</h3></div>`;
+                document.getElementById('cart-footer').style.display = 'none';
+                return;
+            }
+            document.getElementById('cart-footer').style.display = 'block';
+            let total = 0;
+            container.innerHTML = cart.map((item, index) => {
+                total += parseFloat(item.price);
+                return `<div class="cart-item"><div><strong>${item.name}</strong><br><small>₹${item.price}</small></div><button class="remove-btn" onclick="removeFromCart(${index})">✕</button></div>`;
+            }).join('');
+            document.getElementById('cart-total-price').innerText = total.toFixed(2);
+        }
+
+        function placeOrder() {
+            let msg = "Hello Uni Milk, I want to order:\n";
+            cart.forEach(item => msg += `- ${item.name} (₹${item.price})\n`);
+            msg += `\nTotal: ₹${document.getElementById('cart-total-price').innerText}`;
+            window.location.href = `https://wa.me/919837854627?text=${encodeURIComponent(msg)}`;
+        }
+
+        function selectPlan(el, price) {
+            document.querySelectorAll('.plan-item').forEach(p => p.classList.remove('active'));
+            el.classList.add('active'); selectedPrice = price;
+            document.getElementById('sub-unlock-btn').innerText = `Unlock Subscription (₹${price})`;
+        }
+
+        function unlockSub() {
+            isSubscribed = true; document.getElementById('sub-status').innerText = "ON";
+            document.getElementById('sub-status').style.color = "green";
+            document.getElementById('sub-unlock-btn').innerText = "Subscription Active";
+            document.getElementById('sub-unlock-btn').className = "unlock-btn unlocked";
+            alert("Subscription Added"); openView('shop-view');
+        }
+    </script>
+</head>
+<body>
+
+    <div id="overlay" class="overlay" onclick="toggleSidebar(false)"></div>
+    <div id="side-menu" class="side-menu">
+        <h2 style="color:var(--primary)">Uni Milk</h2>
+        <div class="menu-link" onclick="openView('shop-view')">Home</div>
+        <div class="menu-link" onclick="openView('subscription-view')">Subscription 🥛</div>
+        <div class="menu-link" onclick="openView('bulk-view')">Bulk Orders 📦</div>
+        <div class="menu-link" onclick="openView('contact-view')">Help & Support 📞</div>
+    </div>
+
+    <header class="header">
+        <div class="nav-btn" id="nav-icon" onclick="handleMenuBtn()">☰</div>
+        <div class="logo-box" onclick="openView('shop-view')">
+            <img src="https://i.postimg.cc/bY17yZ2J/IMG-20251221-WA0000.jpg" class="logo-img">
+            <span class="logo-text">Uni Milk</span>
+        </div>
+        <div class="nav-btn" onclick="openView('contact-view')">👤</div>
+    </header>
+
+    <div id="float-btn" class="support-btn-3d" onclick="openView('contact-view')">
+        <img src="https://i.postimg.cc/C5dVHxsT/IMG-20251222-WA0000.jpg">
+    </div>
+
+    <div id="cart-bar" class="cart-bar" onclick="openView('cart-view')">
+        <span id="cart-count-txt">0 Items Added</span>
+        <span>View Cart ›</span>
+    </div>
+
+    <div id="shop-view" class="view active-view">
+        <div class="top-banner">Namaste 🙏 Bharat 🇮🇳</div>
+        <div class="hero"><h2>Farm Fresh Milk</h2><p>Your Health Our Concern.</p></div>
+        <div class="grid">
+            <div class="card" onclick="openView('milk-view')"><img src="https://i.postimg.cc/vH02XCsj/IMG-20251222-WA0013.jpg" class="prod-img"><h4>Milk</h4></div>
+            <div class="card" onclick="openView('dahi-view')"><img src="https://i.postimg.cc/pLv41K9w/IMG-20251222-WA0008.jpg" class="prod-img"><h4>Dahi</h4></div>
+            <div class="card" onclick="openView('paneer-view')"><img src="https://i.postimg.cc/R0Nkc4Jn/IMG-20251222-WA0012.jpg" class="prod-img"><h4>Paneer</h4></div>
+            <div class="card" onclick="openView('chhach-view')"><img src="https://i.postimg.cc/BQ7N2DTg/IMG-20251222-WA0015.jpg" class="prod-img"><h4>Chhach</h4></div>
+            <div class="card" onclick="openView('ghee-view')"><img src="https://i.postimg.cc/WpHZ2P0f/file-000000004e987206a95c3716263b3f7d.png" class="prod-img"><h4>Desi Ghee</h4></div>
+            <div class="card" onclick="openView('shake-view')"><img src="https://i.postimg.cc/52wnrm6s/file-00000000854c72099c7ba467feb7abae.png" class="prod-img"><h4>Milk Shake</h4></div>
+        </div>
+        <div class="announce-container">
+            <div class="announce-card">
+                <h2>!! Announcement !!</h2>
+                <p>Welcome to Uni Milk! Fresh stock arrives every morning at 6:00 AM.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="subscription-view" class="view">
+        <div class="buddy-msg">Hey Buddy, enable subscription to get fresh milk delivered to your doorstep daily.</div>
+        <div class="status-box">
+            <p>Status: <span id="sub-status" style="color:red; font-weight:bold;">OFF</span></p>
+            <button id="sub-unlock-btn" class="unlock-btn locked" onclick="unlockSub()">Unlock Subscription (₹49)</button>
+        </div>
+        <div class="plan-grid">
+            <div class="plan-item active" onclick="selectPlan(this, 49)">22 Days (₹49)</div>
+            <div class="plan-item" onclick="selectPlan(this, 69)">25 Days (₹69)</div>
+            <div class="plan-item" onclick="selectPlan(this, 89)">28 Days (₹89)</div>
+            <div class="plan-item" onclick="selectPlan(this, 99)">Month (₹99)</div>
+        </div>
+    </div>
+
+    <div id="bulk-view" class="view">
+        <h2 style="padding:15px">Bulk Orders</h2>
+        <div class="support-card">
+            <p style="font-size:1.1em; margin-bottom: 20px; line-height: 1.5; font-weight: bold;">
+                Chat Us On Whatsapp For Big Orders And Get Discounted Also While Ordering Items In Bulk.
+            </p>
+            <a href="https://wa.me/919837854627?text=I%20want%20to%20place%20a%20bulk%20order" class="contact-btn bg-wa">💬 Chat on WhatsApp</a>
+        </div>
+    </div>
+
+    <div id="contact-view" class="view">
+        <div class="support-card">
+            <img src="https://i.postimg.cc/C5dVHxsT/IMG-20251222-WA0000.jpg" style="width:100px; border-radius:50%; border:4px solid #4CAF50; margin-bottom:10px;">
+            <h3>Uni Milk Official</h3>
+            <a href="https://wa.me/919837854627" class="contact-btn bg-wa">💬 WhatsApp Us</a>
+            <a href="tel:9837854627" class="contact-btn bg-call">📞 Call Support</a>
+            <a href="mailto:uni.milkofficial2426@gmail.com" class="contact-btn bg-mail">✉️ Email Us</a>
+            <a href="https://instagram.com/unimilk" class="contact-btn bg-insta">📸 Instagram</a>
+        </div>
+    </div>
+
+    <div id="milk-view" class="view"><h2 style="padding:15px">Milk</h2><div id="milk-grid" class="grid"></div></div>
+    <div id="dahi-view" class="view"><h2 style="padding:15px">Dahi</h2><div id="dahi-grid" class="grid"></div></div>
+    <div id="paneer-view" class="view"><h2 style="padding:15px">Paneer</h2><div id="paneer-grid" class="grid"></div></div>
+    <div id="chhach-view" class="view"><h2 style="padding:15px">Chhach</h2><div id="chhach-grid" class="grid"></div></div>
+    <div id="ghee-view" class="view"><h2 style="padding:15px">Desi Ghee</h2><div id="ghee-grid" class="grid"></div></div>
+    <div id="shake-view" class="view"><h2 style="padding:15px">Milk Shake</h2><div class="coming-soon">🚀 Coming Soon!</div></div>
+    <div id="cart-view" class="view">
+        <h2 style="padding:15px">My Cart</h2>
+        <div id="cart-items-list"></div>
+        <div id="cart-footer" class="cart-total-box" style="display:none;">
+            <h3>Total: ₹<span id="cart-total-price">0</span></h3>
+            <button class="btn" style="background:var(--primary); color:white; padding:15px;" onclick="placeOrder()">Place Order via WhatsApp</button>
+        </div>
+    </div>
+
+</body>
+</html>
