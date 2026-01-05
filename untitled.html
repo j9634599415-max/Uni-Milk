@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Spooky Birthday Kittu 👻</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Creepster', cursive;}
+@import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+
+body{
+  height:100vh;
+  background:#0b0b0b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  color:#ff4d4d;
+}
+
+.card{
+  background:#1a1a1a;
+  padding:35px 25px;
+  border-radius:20px;
+  text-align:center;
+  width:340px;
+  box-shadow:0 0 20px #ff4d4d;
+  z-index:10;
+}
+
+h1{font-size:28px;margin-bottom:10px;color:#ff1a1a;text-shadow: 2px 2px 5px #000;}
+h2{font-size:18px;margin-bottom:10px;color:#ff4d4d;text-shadow: 1px 1px 3px #000;}
+.date{font-size:14px;color:#ff6666;margin-bottom:15px;}
+.typewriter{font-size:15px;color:#ff6666;min-height:60px;text-shadow:1px 1px 2px #000;}
+
+button{
+  margin-top:12px;
+  padding:10px 18px;
+  border:none;
+  border-radius:30px;
+  background:#ff1a1a;
+  color:#fff;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow:0 0 10px #ff1a1a;
+}
+button:hover{opacity:0.85;}
+
+#surpriseMsg{display:none;margin-top:12px;color:#ff4d4d;font-size:15px;}
+
+.cake{
+  font-size:50px;
+  margin-top:15px;
+  transition: transform 0.5s;
+}
+.cake.cut{transform:rotate(-10deg) scale(1.1);}
+.slice{display:none;font-size:40px;}
+.cake.cut + .slice{display:block;animation:pop 0.6s;}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1);}}
+
+/* Floating spooky elements */
+.spooky span{
+  position:absolute;
+  font-size:18px;
+  animation:float 6s linear infinite;
+  opacity:0.7;
+}
+@keyframes float{
+  0%{transform:translateY(100vh);}
+  100%{transform:translateY(-10vh);}
+}
+
+/* Secret Box */
+.secretBox{
+  display:none;
+  margin-top:15px;
+  padding:15px;
+  border-radius:15px;
+  background:#330000;
+  color:#ff4d4d;
+  font-size:15px;
+  filter:blur(6px);
+  transition:filter .4s;
+}
+.secretBox.reveal{filter:blur(0);}
+.secretHint{font-size:12px;color:#999;margin-top:5px;}
+
+/* Flickering candle animation */
+@keyframes flicker{
+  0%,100%{opacity:1;}
+  50%{opacity:0.6;}
+}
+.flicker{animation:flicker 0.3s infinite;}
+
+/* Ghost Animation */
+#ghost{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  font-size: 120px;
+  color: #ffffffaa;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Fireworks */
+.firework{
+  position:absolute;
+  width:5px;height:5px;
+  border-radius:50%;
+  background:yellow;
+  pointer-events:none;
+  animation:fire 1s ease-out forwards;
+}
+@keyframes fire{
+  0%{transform:translate(0,0) scale(1);opacity:1;}
+  100%{transform:translate(var(--x),var(--y)) scale(2);opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<div class="spooky"></div>
+
+<div class="card">
+  <h1>Happy Spooky Birthday 🎃</h1>
+  <h2>Kittu Poniya 👻</h2>
+  <div class="date">06 January</div>
+
+  <div class="typewriter" id="text"></div>
+
+  <button onclick="showSurprise()">Click for Surprise 💀</button>
+  <div id="surpriseMsg">
+     😈💖Agr kuch gift chaiyea ho to bta dio..ye motti🫶 dilla degii..bbu m to bhut dur hu so sorry bbu m nhi aa paungaa..ho ske to maaf kr dio..🥹💗🎃
+  </div>
+
+  <div class="cake flicker" id="cake">🕯️🎂</div>
+  <div class="slice">🕯️🍰</div>
+  <button onclick="cutCake()" id="cakeBtn">Cut the Cake 🎃</button>
+
+  <button onclick="openSecret()">Secret 🤫</button>
+  <div class="secretBox" id="secretBox">
+Betaa..jiaaj kl bhut chalak hote jaa rhee hoo..thoda km dimag chlaya krr..smjhaa..tu babu h apnaa.🫂..kisiko btai mtt..mene tujhe wish kiya ya eesa kuch..smjhaa..
+  </div>
+  <div class="secretHint" id="hint"></div>
+</div>
+
+<!-- Ghost -->
+<div id="ghost">👻</div>
+
+<script>
+/* Typewriter */
+const msg="Happy Spooky Birthday Kittu... Babu 😈🎃\nAaj ka din sirf tumhara hai 👻\nStay mischievous always 😉";
+let i=0;
+(function type(){
+  if(i<msg.length){
+    text.innerHTML+=msg[i]==="\n"? "<br>":msg[i];
+    i++; setTimeout(type,70);
+  }
+})();
+
+/* Surprise with ghost */
+function showGhost(){
+  const ghost = document.getElementById("ghost");
+  ghost.style.transform = "translate(-50%, -50%) scale(1.5)";
+  ghost.style.opacity = "1";
+  
+  setTimeout(()=>{
+    ghost.style.transform = "translate(-50%, -50%) scale(0.5)";
+    ghost.style.opacity = "0";
+  },1500);
+}
+
+function showSurprise(){
+  surpriseMsg.style.display="block";
+  fireworks(30);
+  showGhost(); // ghost animation triggers here
+}
+
+/* Cake */
+function cutCake(){
+  cake.classList.add("cut");
+  cakeBtn.innerText="Cake Cut 🎃";
+  slice.style.display="block";
+  fireworks(30);
+}
+
+/* Secret */
+let timer;
+function openSecret(){
+  secretBox.style.display="block";
+  hint.innerText="Hold 3 seconds to reveal 🤍";
+  timer=setTimeout(()=>{
+    secretBox.classList.add("reveal");
+    hint.innerText="Secret unlocked 😈💖";
+    fireworks(20);
+  },3000);
+}
+secretBox?.addEventListener("touchend",()=>clearTimeout(timer));
+secretBox?.addEventListener("mouseup",()=>clearTimeout(timer));
+
+/* Floating spooky elements */
+const spookyChars=["👻","🦇","💀"];
+for(let i=0;i<20;i++){
+  let s=document.createElement("span");
+  s.innerHTML=spookyChars[Math.floor(Math.random()*spookyChars.length)];
+  s.style.left=Math.random()*100+"vw";
+  s.style.top=Math.random()*50+"vh";
+  s.style.animationDuration=(Math.random()*5+4)+"s";
+  document.querySelector(".spooky").appendChild(s);
+}
+
+/* Fireworks Function (spooky sparks) */
+function fireworks(count){
+  for(let i=0;i<count;i++){
+    let f=document.createElement("div");
+    f.classList.add("firework");
+    let x=(Math.random()*200-100)+"px";
+    let y=(Math.random()*-200-50)+"px";
+    f.style.setProperty("--x",x);
+    f.style.setProperty("--y",y);
+    f.style.background=['#ff1a1a','#990000','#ff6666','#cc0000'][Math.floor(Math.random()*4)];
+    f.style.left=Math.random()*100+"vw";
+    f.style.top=Math.random()*50+"vh";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1000);
+  }
+}
+</script>
+
+</body>
+</html>
